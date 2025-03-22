@@ -18,6 +18,8 @@ function App() {
   const [currentImage, setCurrentImage] = useState("");
   const [prevImages, setPrevImages] = useState([]);
   const [quota, setQuota] = useState(null);
+  const [loading, setLoading] = useState(false);
+
 
   const inputsInfo = [
     "Input a link to any website (no https)",
@@ -46,8 +48,11 @@ function App() {
   };
 
   const callAPI = async (query) => {
+    setLoading(true);
     const response = await fetch(query);
     const json = await response.json();
+    setLoading(false);
+
 
     if (!json.url) {
       alert("Could not generate screenshot.");
@@ -84,6 +89,12 @@ function App() {
       return;
     }
 
+    if (isNaN(inputs.width) || isNaN(inputs.height)) {
+      alert("Width and height must be numbers.");
+      return;
+    }
+    
+
     for (const [key, value] of Object.entries(inputs)) {
       if (!value) {
         inputs[key] = defaultValues[key];
@@ -101,6 +112,7 @@ function App() {
         </div>
       )}
       <h1>Build Your Own Screenshot! 📸</h1>
+      {loading && <p>⏳ Taking your screenshot, please wait...</p>}
 
       <APIForm
         inputs={inputs}
